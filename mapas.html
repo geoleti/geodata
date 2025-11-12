@@ -5,30 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GeoData – Mapas</title>
   <style>
-    :root { --bg:#0f172a; --card:#111827; --ink:#e5e7eb; --muted:#94a3b8; --accent:#60a5fa; }
+    :root { --bg:#0b1224; --ink:#e5e7eb; --muted:#9fb0cc; }
     *{box-sizing:border-box}
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(160deg,#0b1224,#14213d);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-    header,footer{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    header,footer{padding:18px 20px;display:flex;align-items:center;justify-content:space-between}
     header a, footer a{color:var(--ink);text-decoration:none;opacity:.85}
     header a:hover, footer a:hover{opacity:1}
     .wrap{width:min(1100px,92vw);margin:0 auto}
-    h1{font-size:clamp(1.6rem,2.5vw,2.2rem);font-weight:700;margin:8px 0}
-    p.lead{margin:4px 0 18px;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin:18px 0 28px}
-    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;transition:.25s;display:flex;flex-direction:column;gap:10px}
-    .card:hover{transform:translateY(-3px);background:rgba(255,255,255,.09)}
-    .title{font-weight:600}
-    .muted{color:var(--muted);font-size:.95rem}
-    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
-    .btn{display:inline-block;padding:8px 12px;border-radius:12px;text-decoration:none;font-weight:600;border:1px solid rgba(255,255,255,.2)}
-    .btn.primary{background:#fff;color:#0b1224}
-    .btn.ghost{background:transparent;color:#fff}
-    .iframe-wrap{position:relative;width:100%;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.15);background:#0b1224}
-    .iframe-wrap::before{content:"";display:block;padding-top:62%}
-    .iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-    section{margin:10px 0 40px}
-    h2{margin:0 0 10px;font-size:1.2rem;opacity:.95}
-    .hint{font-size:.9rem;color:var(--muted)}
+    .hero{margin:18px 0 10px}
+    .hero a{display:block;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.14);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .hero img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+    .caption{margin:8px 2px 20px;color:var(--muted);font-size:.95rem}
+    .panel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px;line-height:1.55}
+    .panel h2{margin:0 0 8px;font-size:1.1rem}
+    .panel p{margin:8px 0}
+    .bullets{margin:10px 0 6px;padding-left:18px}
+    .bullets li{margin:6px 0}
+    .note{font-size:.9rem;color:var(--muted)}
   </style>
 </head>
 <body>
@@ -38,56 +31,33 @@
   </header>
 
   <main class="wrap">
-    <h1>Mapas publicados</h1>
-    <p class="lead">Elegí un mapa para abrirlo en pantalla completa o previsualizarlo embebido.</p>
+    <!-- HERO: previsualización como imagen fija que abre el mapa en pestaña nueva -->
+    <div class="hero">
+      <!-- Reemplazá el src por la portada que subas a tu repo (p.ej. img/SNA/preview_cobertura.png) -->
+      <a href="https://www.arcgis.com/apps/instant/sidebar/index.html?appid=0019494a28b544468f4bd3c08fa55e10" target="_blank" rel="noopener">
+        <img src="img/preview_cobertura.png" alt="Cobertura y accesibilidad " />
+      </a>
+      <div class="caption">Click en la imagen para abrir el mapa interactivo en una pestaña nueva.</div>
+    </div>
 
-    <!-- ArcGIS Instant App: Sidebar -->
-    <section>
-      <h2>ArcGIS – Visor lateral</h2>
-      <div class="grid">
-        <article class="card">
-          <div class="title">Mapa ArcGIS – Sidebar</div>
-          <div class="muted">App ID: 0019494a28b544468f4bd3c08fa55e10</div>
-          <div class="btns">
-            <a class="btn primary" target="_blank" rel="noopener" href="https://www.arcgis.com/apps/instant/sidebar/index.html?appid=0019494a28b544468f4bd3c08fa55e10">Abrir en pestaña nueva</a>
-            <a class="btn ghost" href="#preview-arcgis">Ver embebido</a>
-          </div>
-        </article>
-      </div>
-
-      <!-- Preview embed -->
-      <div id="preview-arcgis" class="iframe-wrap" style="margin-top:14px">
-        <iframe class="iframe" title="ArcGIS Instant App" src="https://www.arcgis.com/apps/instant/sidebar/index.html?appid=0019494a28b544468f4bd3c08fa55e10"></iframe>
-      </div>
-      <p class="hint">Sugerencia: si el mapa tarda en cargar, probá abrirlo a pantalla completa con el botón superior.</p>
-    </section>
-
-    <!-- Sección para tus propios mapas estáticos/HTML -->
-    <section>
-      <h2>Otros mapas de Geoleti</h2>
-      <div class="grid">
-        <article class="card">
-          <div class="title">Mapa de prueba Leaflet</div>
-          <div class="muted">HTML estático servido desde este repositorio</div>
-          <div class="btns">
-            <a class="btn primary" target="_blank" rel="noopener" href="./mapa.html">Abrir</a>
-            <a class="btn ghost" target="_blank" rel="noopener" href="https://geoleti.github.io/geodata/mapa.html">URL pública</a>
-          </div>
-        </article>
-        <!-- Ejemplo adicional (habilitar cuando exista)
-        <article class="card">
-          <div class="title">SNA Litio – Cobertura</div>
-          <div class="muted">Mapa temático</div>
-          <div class="btns">
-            <a class="btn primary" target="_blank" rel="noopener" href="./MapaSNAlitio.html">Abrir</a>
-          </div>
-        </article> -->
-      </div>
-    </section>
+    <!-- TEXTO EXPLICATIVO solicitado -->
+    <article class="panel">
+      <p>🗺️ A partir de la red vial (OSM) y los tiempos estimados de desplazamiento terrestre, se elaboró un mapa que muestra los <strong>tiempos de viaje desde los aeropuertos del Sistema Nacional</strong>, a 1, 2 y 3 horas de distancia.</p>
+      <p>Estos tiempos constituyen el <strong>insumo base para definir las áreas de influencia aeroportuarias</strong>, entendidas como los espacios geográficos sobre los cuales cada aeropuerto ejerce un poder de atracción y delimita el universo de potenciales pasajeros.</p>
+      <p>Tomando como punto de partida la reflexión de Daniel Montoto, este ejercicio complementa aquella lectura desde una perspectiva territorial y de accesibilidad. El análisis reafirma que <strong>el espacio no es homogéneo</strong>, sino que cada cobertura responde a sus condiciones geográficas, infraestructurales y demográficas particulares.</p>
+      <h2>📊 Resultados del análisis de accesibilidad</h2>
+      <ul class="bullets">
+        <li>El <strong>78&nbsp;%</strong> de la población del país se encuentra a <strong>menos de una hora</strong> de un aeropuerto con vuelos comerciales.</li>
+        <li>El <strong>90&nbsp;%</strong>, dentro de <strong>dos horas</strong>.</li>
+        <li>Y el <strong>94&nbsp;%</strong>, dentro de <strong>tres horas</strong> de viaje.</li>
+      </ul>
+      <p>Las zonas ubicadas a más de tres horas de cualquier aeropuerto coinciden con las regiones de menor densidad poblacional, reforzando la relación entre accesibilidad aérea y concentración demográfica.</p>
+      <p>Este análisis permite comprender la <strong>cobertura territorial efectiva del sistema aeroportuario</strong>, aportando información clave para la <strong>planificación de infraestructuras</strong>, la <strong>integración regional</strong> y la <strong>equidad territorial</strong>.</p>
+      <p class="note">Sugerencia: podés actualizar el porcentaje si publicás nuevas estimaciones; este texto quedará en la misma página que el acceso al mapa.</p>
+    </article>
   </main>
 
-  <footer class="wrap">
-    <span class="hint">© 2025 – GeoData | GitHub Pages</span>
+  <footer class="wrap" style="margin:26px 0 20px">
     <a href="#top">Volver arriba ↑</a>
   </footer>
 </body>
