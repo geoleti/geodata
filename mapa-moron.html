@@ -67,20 +67,20 @@
       height: 100%;
     }
 
-
     .subtitle {
       font-size:0.85rem;
       opacity:.85;
       margin-top:2px;
     }
 
-        /* Contenedor que rota todo el mapa */
+    /* Contenedor que rota todo el mapa */
     .map-rotate-wrapper {
       flex: 1;                 /* ocupa todo el alto restante */
       width: 100%;
       transform-origin: center center;
       transform: rotate(77.9deg);
     }
+
     .grilla-label {
       background: rgba(0,0,0,0.6);
       color: #fff;
@@ -89,7 +89,6 @@
       border: none;
       font-size: 0.7rem;
     }
-
   </style>
 </head>
 <body>
@@ -106,75 +105,89 @@
   </div>
 
   <!-- Leaflet JS -->
-<script>
-  // 1) Coordenadas aproximadas del Aeropuerto de Morón (fallback si falla la grilla)
-  const centroMoron = [-34.674, -58.642]; // [lat, lon]
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin="">
+  </script>
 
-  // 2) Crear el mapa sin zoom fijo (lo ajustaremos con la grilla)
-  const map = L.map('map');
+  <!-- Esri Leaflet (para mapa satelital) -->
+  <script
+    src="https://unpkg.com/esri-leaflet@3/dist/esri-leaflet.js"
+    crossorigin="">
+  </script>
 
-  // 3) Mapa satelital (Esri Imagery)
-  L.esri.basemapLayer('Imagery').addTo(map);
+  <!-- Script del mapa -->
+  <script>
+    // 1) Coordenadas aproximadas del Aeropuerto de Morón (fallback si falla la grilla)
+    const centroMoron = [-34.674, -58.642]; // [lat, lon]
 
-  // 4) Cargar la grilla de Morón desde capasjson/GrillaMoron.geojson
-  fetch('capasjson/GrillaMoron.geojson')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('No se pudo cargar GrillaMoron.geojson');
-      }
-      return response.json();
-    })
-    .then(data => {
-      const grillaLayer = L.geoJSON(data, {
-        style: function () {
-          return {
-            color: '#ffcc00',
-            weight: 1,
-            fillColor: '#ffcc00',
-            fillOpacity: 0.12
-          };
-        },
-        onEachFeature: function (feature, layer) {
-          const props = feature.properties || {};
-          const etiqueta = props.etiqueta || '';
-          const id = props.id || props.ID || '';
+    // 2) Crear el mapa sin zoom fijo (lo ajustaremos con la grilla)
+    const map = L.map('map');
 
-          // 🔹 Popup con info
-          let contenido = '<strong>Celda de grilla</strong>';
-          if (etiqueta) contenido += '<br>Etiqueta: ' + etiqueta;
-          if (id) contenido += '<br>ID: ' + id;
-          layer.bindPopup(contenido);
+    // 3) Mapa satelital (Esri Imagery)
+    L.esri.basemapLayer('Imagery').addTo(map);
 
-          // 🔹 Etiqueta visible en el mapa (tooltip permanente)
-          if (etiqueta) {
-            layer.bindTooltip(etiqueta, {
-              permanent: true,
-              direction: 'center',
-              className: 'grilla-label'
-            });
-          }
+    // 4) Cargar la grilla de Morón desde capasjson/GrillaMoron.geojson
+    fetch('capasjson/GrillaMoron.geojson')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('No se pudo cargar GrillaMoron.geojson');
         }
-      }).addTo(map);
+        return response.json();
+      })
+      .then(data => {
+        const grillaLayer = L.geoJSON(data, {
+          style: function () {
+            return {
+              color: '#ffcc00',
+              weight: 1,
+              fillColor: '#ffcc00',
+              fillOpacity: 0.12
+            };
+          },
+          onEachFeature: function (feature, layer) {
+            const props = feature.properties || {};
+            const etiqueta = props.etiqueta || '';
+            const id = props.id || props.ID || '';
 
-      // 5) Ajustar la vista a la extensión de la grilla (zoom directo a la grilla)
-      try {
-        const bounds = grillaLayer.getBounds();
-        if (bounds.isValid()) {
-          map.fitBounds(bounds.pad(0.1)); // podés bajar el 0.1 si querés aún más cerca
-        } else {
+            // Popup con info
+            let contenido = '<strong>Celda de grilla</strong>';
+            if (etiqueta) contenido += '<br>Etiqueta: ' + etiqueta;
+            if (id) contenido += '<br>ID: ' + id;
+            layer.bindPopup(contenido);
+
+            // Etiqueta visible en el mapa (tooltip permanente)
+            if (etiqueta) {
+              layer.bindTooltip(etiqueta, {
+                permanent: true,
+                direction: 'center',
+                className: 'grilla-label'
+              });
+            }
+          }
+        }).addTo(map);
+
+        // 5) Ajustar la vista a la extensión de la grilla (zoom directo a la grilla)
+        try {
+          const bounds = grillaLayer.getBounds();
+          if (bounds.isValid()) {
+            map.fitBounds(bounds.pad(0.1)); // podés bajar el 0.1 si querés aún más cerca
+          } else {
+            map.setView(centroMoron, 15);
+          }
+        } catch (e) {
+          console.warn('No se pudo ajustar vista a la grilla:', e);
           map.setView(centroMoron, 15);
         }
-      } catch (e) {
-        console.warn('No se pudo ajustar vista a la grilla:', e);
+      })
+      .catch(error => {
+        console.error(error);
+        // Fallback: centrar en Morón con zoom cercano
         map.setView(centroMoron, 15);
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      // Fallback: centrar en Morón con zoom cercano
-      map.setView(centroMoron, 15);
-    });
-</script>
+      });
+  </script>
 
 </body>
 </html>
+
