@@ -109,7 +109,7 @@
     const centroMoron = [-34.674, -58.642]; // [lat, lon] en Argentina
 
     // 2) Mapa satelital (Esri Imagery)
-    const map = L.map('map').setView(centroMoron, 14);
+    const map = L.map('map').setView(centroMoron, 10);
     L.esri.basemapLayer('Imagery').addTo(map);
 
     // 3) Cargar la grilla de Morón desde capasjson/GrillaMoron.geojson
