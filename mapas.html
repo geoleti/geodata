@@ -84,6 +84,64 @@
       color:var(--muted);
       font-size:0.9rem; /* ✏️ Pie de foto / notas más discretas */
     }
+
+    /* 🔹 NUEVA SECCIÓN: TARJETAS DE MAPAS */
+    .map-section-title{
+      margin:0 0 10px;
+      font-size:1.3rem;
+      font-weight:600;
+    }
+    .map-section-intro{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:0.98rem;
+    }
+    .map-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:18px;
+      margin:10px 0 26px;
+    }
+    .map-card{
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:16px;
+      padding:14px 16px 16px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .map-card h3{
+      margin:0 0 6px;
+      font-size:1.1rem;
+    }
+    .map-card p{
+      margin:4px 0 10px;
+      font-size:0.95rem;
+      color:var(--muted);
+    }
+    .map-card a{
+      align-self:flex-start;
+      margin-top:4px;
+      text-decoration:none;
+      background:#fff;
+      color:#1e3c72;
+      padding:7px 14px;
+      border-radius:20px;
+      font-weight:600;
+      font-size:0.9rem;
+      transition:background .3s;
+    }
+    .map-card a:hover{background:#d9e3ff}
+    .tag-pill{
+      display:inline-block;
+      margin-top:4px;
+      padding:3px 9px;
+      border-radius:999px;
+      font-size:0.78rem;
+      background:rgba(255,255,255,.08);
+      color:var(--muted);
+    }
   </style>
 </head>
 <body>
@@ -100,21 +158,68 @@
   </section>
 
   <main class="wrap">
+    <!-- 🔹 NUEVA SECCIÓN: TARJETAS DE MAPAS DISPONIBLES -->
+    <section style="margin-bottom:24px;">
+      <h2 class="map-section-title">Mapas disponibles</h2>
+      <p class="map-section-intro">
+        Elegí uno de los mapas para abrirlo en una pestaña nueva. Próximamente se incorporarán
+        más visualizaciones específicas por aeropuerto.
+      </p>
+
+      <div class="map-grid">
+        <!-- Mapa actual: Accesibilidad aeroportuaria -->
+        <article class="map-card">
+          <div>
+            <h3>Accesibilidad aeroportuaria (SNA)</h3>
+            <p>
+              Mapa interactivo de tiempos de viaje y áreas de influencia de los aeropuertos del
+              Sistema Nacional, a 1, 2 y 3 horas.
+            </p>
+          </div>
+          <div>
+            <span class="tag-pill">ArcGIS • Instant App</span><br>
+            <a href="https://www.arcgis.com/apps/instant/sidebar/index.html?appid=0019494a28b544468f4bd3c08fa55e10"
+               target="_blank" rel="noopener">
+              Abrir mapa
+            </a>
+          </div>
+        </article>
+
+        <!-- Nuevo mapa: Aeropuerto de Morón -->
+        <article class="map-card">
+          <div>
+            <h3>Aeropuerto de Morón</h3>
+            <p>
+              Mapa específico del Aeropuerto de Morón, con imagen satelital de base y una capa de
+              grilla de análisis (<code>capasjson/GrillaMoron.geojson</code>).
+            </p>
+          </div>
+          <div>
+            <span class="tag-pill">En desarrollo</span><br>
+            <!-- Cuando lo tengas, creás mapa-moron.html con el visor o Leaflet -->
+            <a href="mapa-moron.html" target="_blank" rel="noopener">
+              Abrir mapa de Morón
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <!-- TEXTO PRINCIPAL -->
     <article class="panel">
       <p>🗺️ A partir de la red vial (OSM) y los tiempos estimados de desplazamiento terrestre, se elaboró un mapa que muestra los <strong>tiempos de viaje desde los aeropuertos del Sistema Nacional</strong>, a 1, 2 y 3 horas de distancia.</p>
       <p>Estos tiempos constituyen el <strong>insumo base para definir las áreas de influencia aeroportuarias</strong>, entendidas como los espacios geográficos sobre los cuales cada aeropuerto ejerce un poder de atracción y delimita el universo de potenciales pasajeros.</p>
-<p>
-  Tomando como punto de partida la reflexión de 
-  <a href="https://www.linkedin.com/feed/update/urn:li:activity:7378402232532185088/" 
-     target="_blank" 
-     rel="noopener" 
-     style="color:#9cc4ff; text-decoration:none; font-weight:600;">
-     Daniel Montoto
-  </a>, 
-  este ejercicio complementa aquella lectura desde una perspectiva territorial y de accesibilidad. 
-  El análisis reafirma que <strong>el espacio no es homogéneo</strong>, sino que cada cobertura responde a sus condiciones geográficas, infraestructurales y demográficas particulares.
-</p>
+      <p>
+        Tomando como punto de partida la reflexión de 
+        <a href="https://www.linkedin.com/feed/update/urn:li:activity:7378402232532185088/" 
+          target="_blank" 
+          rel="noopener" 
+          style="color:#9cc4ff; text-decoration:none; font-weight:600;">
+          Daniel Montoto
+        </a>, 
+        este ejercicio complementa aquella lectura desde una perspectiva territorial y de accesibilidad. 
+        El análisis reafirma que <strong>el espacio no es homogéneo</strong>, sino que cada cobertura responde a sus condiciones geográficas, infraestructurales y demográficas particulares.
+      </p>
       <h2>📊 Resultados del análisis de accesibilidad</h2>
       <ul class="bullets">
         <li>El <strong>78&nbsp;%</strong> de la población del país se encuentra a <strong>menos de una hora</strong> de un aeropuerto con vuelos comerciales.</li>
