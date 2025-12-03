@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoData – Aeropuerto de Morón</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+
+  <style>
+    :root {
+      --bg:#0b1224;
+      --ink:#e5e7eb;
+      --muted:#9fb0cc;
+    }
+    * { box-sizing:border-box; }
+
+    html, body {
+      height:100%;
+      margin:0;
+      padding:0;
+    }
+
+    body {
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      display:flex;
+      flex-direction:column;
+    }
+
+    header {
+      padding:10px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background:linear-gradient(135deg,#1e3c72,#2a5298);
+      color:#fff;
+      font-size:0.95rem;
+      box-shadow:0 2px 10px rgba(0,0,0,.4);
+      z-index:1000;
+    }
+
+    header a {
+      color:#e5e7eb;
+      text-decoration:none;
+      opacity:.9;
+    }
+    header a:hover {
+      opacity:1;
+    }
+
+    header h1 {
+      margin:0;
+      font-size:1.2rem;
+      font-weight:600;
+    }
+
+    #map {
+      flex:1;            /* ocupa todo el alto restante */
+      width:100%;
+    }
+
+    .subtitle {
+      font-size:0.85rem;
+      opacity:.85;
+      margin-top:2px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="mapas.html">← Volver a mapas</a>
+    <div>
+      <h1>Aeropuerto de Morón</h1>
+      <div class="subtitle">Imagen satelital + grilla de análisis</div>
+    </div>
+  </header>
+
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin="">
+  </script>
+
+  <script>
+    // Coordenadas aproximadas del Aeropuerto de Morón
+    const centroMoron = [-34.674, -58.642];
+
+    // Inicializar mapa
+    const map = L.map('map', {
+      center: centroMoron,
+      zoom: 14
+    });
+
+    // Fondo satelital (Esri World Imagery)
+    const satLayer = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
+      {
+        maxZoom: 19,
+        attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, IGN, IGP, UPR-EGP, and the GIS User Community'
+      }
+    ).addTo(map);
+
+    // Cargar la grilla de Morón desde capasjson/GrillaMoron.geojson
+    fetch('capasjson/GrillaMoron.geojson')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('No se pudo cargar GrillaMoron.geojson');
+        }
+        return response.json();
+      })
+      .then(data => {
+        const grillaLayer = L.geoJSON(data, {
+          style: function () {
+            return {
+              color: '#ffcc00',
+              weight: 1,
+              fillColor: '#ffcc00',
+              fillOpacity: 0.12
+            };
+          },
+          onEachFeature: function (feature, layer) {
+            // Podés personalizar el popup según los atributos de la grilla
+            const props = feature.properties || {};
+            const id = props.id || props.ID || '';
+            const texto = props.texto || props.label || '';
+            let contenido = '<strong>Celda de grilla</strong>';
+            if (id) contenido += '<br>ID: ' + id;
+            if (texto) contenido += '<br>' + texto;
+            layer.bindPopup(contenido);
+          }
+        }).addTo(map);
+
+        // Ajustar la vista a la extensión de la grilla
+        try {
+          const bounds = grillaLayer.getBounds();
+          if (bounds.isValid()) {
+            map.fitBounds(bounds.pad(0.1));
+          }
+        } catch (e) {
+          console.warn('No se pudo ajustar vista a la grilla:', e);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        // Si falla la carga, al menos centramos en Morón
+        map.setView(centroMoron, 14);
+      });
+  </script>
+</body>
+</html>
