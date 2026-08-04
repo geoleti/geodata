@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Mapa interactivo de aeropuertos de Sudamérica con infraestructura, clasificación, fuentes y datos operativos disponibles.">
+  <meta name="theme-color" content="#0b1f33">
+  <title>Aeropuertos de Sudamérica | GeoData</title>
+
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://a.basemaps.cartocdn.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynhY5p9yr0ZGa1u/0OaqpE2VZ+4M=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="css/aeropuertos-sudamerica.css">
+</head>
+<body>
+  <a class="skip-link" href="#map">Ir al mapa</a>
+
+  <header class="topbar">
+    <div class="brand-block">
+      <a class="back-link" href="mapas.html" aria-label="Volver a mapas">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      </a>
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-13a7 7 0 1 0-14 0c0 6.9 7 13 7 13Z"/><circle cx="12" cy="8" r="2.4"/></svg>
+      </div>
+      <div>
+        <p class="eyebrow">GeoData · Infraestructura aeroportuaria</p>
+        <h1>Aeropuertos de Sudamérica</h1>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <span class="update-badge" title="Fecha de actualización del conjunto geográfico">
+        <span class="status-dot" aria-hidden="true"></span>
+        Actualizado · 4 ago 2026
+      </span>
+      <button class="header-button" id="aboutButton" type="button" aria-haspopup="dialog">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg>
+        <span>Acerca de los datos</span>
+      </button>
+      <button class="mobile-filter-button" id="mobileFilterButton" type="button" aria-controls="sidebar" aria-expanded="false">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        Filtros
+      </button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Filtros y resultados">
+      <div class="sidebar-scroll">
+        <section class="filter-section search-section">
+          <label class="field-label" for="searchInput">Buscar aeropuerto</label>
+          <div class="search-box">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input id="searchInput" type="search" autocomplete="off" placeholder="Nombre, ciudad, IATA u OACI">
+            <button class="clear-search" id="clearSearch" type="button" aria-label="Limpiar búsqueda" hidden>
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <section class="filter-section" aria-labelledby="countryLabel">
+          <label class="field-label" id="countryLabel" for="countrySelect">País o territorio</label>
+          <div class="select-wrap">
+            <select id="countrySelect">
+              <option value="">Todos los países</option>
+            </select>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg>
+          </div>
+        </section>
+
+        <section class="filter-section" aria-labelledby="typeLabel">
+          <div class="field-label-row">
+            <span class="field-label" id="typeLabel">Tipo de aeropuerto</span>
+            <button class="text-button" id="selectAllTypes" type="button">Mostrar todos</button>
+          </div>
+          <div class="type-filters" role="group" aria-labelledby="typeLabel">
+            <button class="filter-chip is-active" type="button" data-type="internacional" aria-pressed="true">
+              <span class="legend-dot international" aria-hidden="true"></span>Internacional
+              <span class="chip-count" data-count-type="internacional">0</span>
+            </button>
+            <button class="filter-chip is-active" type="button" data-type="doméstico" aria-pressed="true">
+              <span class="legend-dot domestic" aria-hidden="true"></span>Doméstico
+              <span class="chip-count" data-count-type="doméstico">0</span>
+            </button>
+            <button class="filter-chip is-active" type="button" data-type="militar-mixto" aria-pressed="true">
+              <span class="legend-dot mixed" aria-hidden="true"></span>Militar-mixto
+              <span class="chip-count" data-count-type="militar-mixto">0</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="filter-section compact-options" aria-label="Filtros especiales">
+          <label class="switch-row">
+            <span>
+              <strong>Función carguera relevante</strong>
+              <small>Aeropuertos identificados con rol de carga</small>
+            </span>
+            <input id="cargoOnly" type="checkbox">
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+          <label class="switch-row">
+            <span>
+              <strong>Con datos operativos</strong>
+              <small>Pasajeros, operaciones o carga publicados</small>
+            </span>
+            <input id="operationalOnly" type="checkbox">
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+        </section>
+
+        <section class="summary-section" aria-live="polite" aria-atomic="true">
+          <div class="summary-card summary-primary">
+            <span class="summary-value" id="visibleCount">—</span>
+            <span class="summary-label">aeropuertos visibles</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="countryCount">—</span>
+            <span class="summary-label">países y territorios</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="operationalCount">—</span>
+            <span class="summary-label">con datos operativos</span>
+          </div>
+        </section>
+
+        <section class="results-section" aria-labelledby="resultsTitle">
+          <div class="results-heading">
+            <h2 id="resultsTitle">Resultados</h2>
+            <button class="text-button" id="resetFilters" type="button">Restablecer</button>
+          </div>
+          <div class="result-list" id="resultList"></div>
+          <button class="show-more-button" id="showMoreButton" type="button" hidden>Ver más resultados</button>
+        </section>
+      </div>
+      <div class="sidebar-footer">
+        <span>341 registros · WGS84</span>
+        <span>Fuentes oficiales + OurAirports</span>
+      </div>
+    </aside>
+
+    <section class="map-stage" id="mapStage" aria-label="Mapa interactivo">
+      <div id="map" tabindex="0"></div>
+
+      <div class="loading-overlay" id="loadingOverlay" role="status">
+        <div class="loader" aria-hidden="true"></div>
+        <strong>Cargando aeropuertos</strong>
+        <span>Preparando datos geográficos y operativos…</span>
+      </div>
+
+      <div class="map-error" id="mapError" role="alert" hidden>
+        <strong>No fue posible cargar los datos</strong>
+        <span>Comprobá la conexión y volvé a intentar.</span>
+        <button type="button" id="retryButton">Reintentar</button>
+      </div>
+
+      <div class="map-tools" aria-label="Herramientas del mapa">
+        <button id="fitMapButton" type="button" title="Ver todos los resultados" aria-label="Ver todos los resultados">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4"/></svg>
+        </button>
+        <button id="fullscreenButton" type="button" title="Pantalla completa" aria-label="Alternar pantalla completa">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg>
+        </button>
+      </div>
+
+      <div class="map-legend" id="mapLegend">
+        <button class="legend-title" id="legendToggle" type="button" aria-expanded="true" aria-controls="legendBody">
+          <span>Simbología</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg>
+        </button>
+        <div class="legend-body" id="legendBody">
+          <div><span class="legend-dot international"></span>Internacional</div>
+          <div><span class="legend-dot domestic"></span>Doméstico</div>
+          <div><span class="legend-dot mixed"></span>Militar-mixto</div>
+          <div><span class="cargo-symbol">C</span>Función carguera relevante</div>
+          <p>El tamaño del símbolo representa la longitud de la pista principal.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="mobile-backdrop" id="mobileBackdrop" hidden></div>
+
+  <aside class="detail-panel" id="detailPanel" aria-label="Detalle del aeropuerto" aria-hidden="true">
+    <button class="detail-close" id="detailClose" type="button" aria-label="Cerrar detalle">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg>
+    </button>
+    <div id="detailContent"></div>
+  </aside>
+
+  <dialog class="about-dialog" id="aboutDialog" aria-labelledby="aboutTitle">
+    <button class="dialog-close" id="aboutClose" type="button" aria-label="Cerrar">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg>
+    </button>
+    <p class="eyebrow">Metodología y alcance</p>
+    <h2 id="aboutTitle">Acerca de los datos</h2>
+    <p>La capa reúne aeropuertos sudamericanos con servicio comercial regular, más instalaciones mixtas o cargueras relevantes identificadas. Las coordenadas están expresadas en WGS84.</p>
+    <div class="about-grid">
+      <div><strong>341</strong><span>aeropuertos</span></div>
+      <div><strong>13</strong><span>países y territorios</span></div>
+      <div><strong>83,6 %</strong><span>con AIP oficial localizada</span></div>
+    </div>
+    <h3>Lectura responsable</h3>
+    <ul>
+      <li>La referencia oficial se combina con OurAirports para geometría e infraestructura.</li>
+      <li>La tabla operativa sólo muestra cifras verificadas y deja vacíos los valores no disponibles.</li>
+      <li>Para uso operacional deben consultarse la AIP y los NOTAM vigentes de cada país.</li>
+    </ul>
+    <p class="dialog-note">Compilación: 4 de agosto de 2026. Elaboración: GeoData.</p>
+    <form method="dialog"><button class="primary-button" type="submit">Entendido</button></form>
+  </dialog>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="js/aeropuertos-sudamerica.js" defer></script>
+</body>
+</html>
