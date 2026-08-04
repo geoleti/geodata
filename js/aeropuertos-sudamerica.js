@@ -122,18 +122,15 @@
 
     try {
       const [geoResponse, operationsResponse] = await Promise.all([
-        fetch(DATA_URLS.airports, { cache: "no-cache" }),
-        fetch(DATA_URLS.operations, { cache: "no-cache" })
+        fetchWithRetry(DATA_URLS.airports),
+        fetchWithRetry(DATA_URLS.operations).catch((error) => {
+          console.warn("Los datos operativos no están disponibles; se muestra la capa geográfica.", error);
+          return null;
+        })
       ]);
 
-      if (!geoResponse.ok || !operationsResponse.ok) {
-        throw new Error("No se pudieron descargar los archivos de datos.");
-      }
-
-      const [geojson, operationsText] = await Promise.all([
-        geoResponse.json(),
-        operationsResponse.text()
-      ]);
+      const geojson = await geoResponse.json();
+      const operationsText = operationsResponse ? await operationsResponse.text() : "";
 
       if (geojson.type !== "FeatureCollection" || !Array.isArray(geojson.features)) {
         throw new Error("El archivo geográfico no es un FeatureCollection válido.");
@@ -164,6 +161,37 @@
       dom.errorMessage.textContent = error.message || "No se pudieron cargar los archivos del mapa.";
       dom.error.hidden = false;
     }
+  }
+
+  async function fetchWithRetry(url, attempts = 3) {
+    let lastError;
+
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 12000);
+
+      try {
+        const response = await fetch(url, {
+          cache: attempt === 1 ? "default" : "reload",
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error(`${url} respondió HTTP ${response.status}.`);
+        }
+
+        return response;
+      } catch (error) {
+        lastError = error;
+        if (attempt < attempts) {
+          await new Promise((resolve) => window.setTimeout(resolve, attempt * 700));
+        }
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+
+    throw new Error(`No se pudo descargar ${url} después de ${attempts} intentos.`, { cause: lastError });
   }
 
   function parseCSV(text) {
