@@ -61,7 +61,8 @@
     activeTypes: new Set(ALL_TYPES),
     selectedId: null,
     resultsLimit: 18,
-    loaded: false
+    loaded: false,
+    loading: false
   };
 
   function initMap() {
@@ -116,7 +117,11 @@
   }
 
   async function loadData() {
-    setLoading(true);
+    if (state.loading) return;
+
+    state.loading = true;
+    setLoading(!state.loaded);
+    dom.retry.disabled = true;
     dom.error.hidden = true;
     dom.errorMessage.textContent = "Comprobá la conexión y volvé a intentar.";
 
@@ -145,6 +150,10 @@
         throw new Error("La capa no contiene puntos válidos.");
       }
 
+      // Desde este punto existe una capa geográfica utilizable. Ningún error
+      // posterior debe volver a cubrirla con una pantalla bloqueante.
+      dom.mapStage.classList.add("has-data");
+
       state.markers.clear();
       state.airports.forEach((airport) => {
         state.markers.set(airport.id, createAirportMarker(airport));
@@ -154,12 +163,21 @@
       renderTypeCounts();
       state.loaded = true;
       applyFilters({ fit: true });
-      setLoading(false);
+      dom.error.hidden = true;
     } catch (error) {
       console.error(error);
+      if (state.loaded && state.airports.length) {
+        dom.mapStage.classList.add("has-data");
+        dom.error.hidden = true;
+        console.warn("Se conservará la capa ya cargada pese al fallo del nuevo intento.");
+      } else {
+        dom.errorMessage.textContent = error.message || "No se pudieron cargar los archivos del mapa.";
+        dom.error.hidden = false;
+      }
+    } finally {
       setLoading(false);
-      dom.errorMessage.textContent = error.message || "No se pudieron cargar los archivos del mapa.";
-      dom.error.hidden = false;
+      state.loading = false;
+      dom.retry.disabled = false;
     }
   }
 
