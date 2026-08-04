@@ -998,6 +998,11 @@ h1 {
   transition: opacity .3s ease, visibility .3s ease;
 }
 
+.map-error[hidden],
+.map-stage.has-data .map-error {
+  display: none !important;
+}
+
 .loading-overlay.is-hidden {
   visibility: hidden;
   opacity: 0;
