@@ -7,11 +7,10 @@
   <meta name="theme-color" content="#0b1f33">
   <title>Aeropuertos de Sudamérica | GeoData</title>
 
-  <link rel="preconnect" href="https://unpkg.com">
   <link rel="preconnect" href="https://a.basemaps.cartocdn.com">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynhY5p9yr0ZGa1u/0OaqpE2VZ+4M=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="vendor/leaflet-markercluster/MarkerCluster.css">
+  <link rel="stylesheet" href="vendor/leaflet-markercluster/MarkerCluster.Default.css">
   <link rel="stylesheet" href="css/aeropuertos-sudamerica.css">
 </head>
 <body>
@@ -152,7 +151,7 @@
 
       <div class="map-error" id="mapError" role="alert" hidden>
         <strong>No fue posible cargar los datos</strong>
-        <span>Comprobá la conexión y volvé a intentar.</span>
+        <span id="mapErrorMessage">Comprobá la conexión y volvé a intentar.</span>
         <button type="button" id="retryButton">Reintentar</button>
       </div>
 
@@ -212,8 +211,8 @@
     <form method="dialog"><button class="primary-button" type="submit">Entendido</button></form>
   </dialog>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="vendor/leaflet-markercluster/leaflet.markercluster.js"></script>
   <script src="js/aeropuertos-sudamerica.js" defer></script>
 </body>
 </html>

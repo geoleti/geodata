@@ -19,6 +19,7 @@
   const dom = {
     loading: document.getElementById("loadingOverlay"),
     error: document.getElementById("mapError"),
+    errorMessage: document.getElementById("mapErrorMessage"),
     retry: document.getElementById("retryButton"),
     search: document.getElementById("searchInput"),
     clearSearch: document.getElementById("clearSearch"),
@@ -117,6 +118,7 @@
   async function loadData() {
     setLoading(true);
     dom.error.hidden = true;
+    dom.errorMessage.textContent = "Comprobá la conexión y volvé a intentar.";
 
     try {
       const [geoResponse, operationsResponse] = await Promise.all([
@@ -159,6 +161,7 @@
     } catch (error) {
       console.error(error);
       setLoading(false);
+      dom.errorMessage.textContent = error.message || "No se pudieron cargar los archivos del mapa.";
       dom.error.hidden = false;
     }
   }
@@ -836,6 +839,7 @@
     } catch (error) {
       console.error(error);
       setLoading(false);
+      dom.errorMessage.textContent = error.message || "No se pudo iniciar el mapa.";
       dom.error.hidden = false;
     }
   }
