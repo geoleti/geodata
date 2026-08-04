@@ -973,6 +973,78 @@ h1 {
   font-weight: 850;
 }
 
+.administrative-symbol {
+  display: inline-block;
+  width: 17px;
+  height: 12px;
+  background: #d9d9d9;
+  border: 1px solid #ffffff;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px #9aabb7;
+}
+
+.administrative-tooltip.leaflet-tooltip {
+  padding: 7px 9px;
+  color: var(--white);
+  background: rgba(7, 21, 34, .94);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  font-size: 9px;
+}
+
+.administrative-tooltip.leaflet-tooltip::before {
+  border-top-color: rgba(7, 21, 34, .94);
+}
+
+.administrative-tooltip strong,
+.administrative-tooltip span,
+.administrative-popup span,
+.administrative-popup strong,
+.administrative-popup small {
+  display: block;
+}
+
+.administrative-tooltip strong {
+  margin-bottom: 2px;
+  font-size: 10px;
+}
+
+.administrative-tooltip span {
+  color: #cbd8e3;
+}
+
+.administrative-popup {
+  min-width: 205px;
+  padding: 2px 1px;
+}
+
+.administrative-popup span {
+  margin-bottom: 4px;
+  color: var(--slate-500);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.administrative-popup strong {
+  margin-bottom: 8px;
+  color: var(--navy-900);
+  font-size: 13px;
+}
+
+.administrative-popup small {
+  color: var(--slate-600);
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+
+.administrative-popup a {
+  color: var(--navy-700);
+  font-weight: 700;
+}
+
 .legend-body p {
   margin: 3px 0 0;
   padding-top: 8px;
