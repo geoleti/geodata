@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="vendor/leaflet-markercluster/MarkerCluster.css">
   <link rel="stylesheet" href="vendor/leaflet-markercluster/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="css/aeropuertos-sudamerica.css?v=20260804-3">
+  <link rel="stylesheet" href="css/aeropuertos-sudamerica.css?v=20260804-4">
 </head>
 <body>
   <a class="skip-link" href="#map">Ir al mapa</a>
@@ -108,6 +108,14 @@
             <input id="operationalOnly" type="checkbox">
             <span class="switch" aria-hidden="true"></span>
           </label>
+          <label class="switch-row administrative-switch-row">
+            <span>
+              <strong>Divisiones administrativas</strong>
+              <small id="administrativeStatus">Provincias, departamentos, estados y equivalentes</small>
+            </span>
+            <input id="administrativeToggle" type="checkbox" checked>
+            <span class="switch" aria-hidden="true"></span>
+          </label>
         </section>
 
         <section class="summary-section" aria-live="polite" aria-atomic="true">
@@ -135,7 +143,7 @@
         </section>
       </div>
       <div class="sidebar-footer">
-        <span>341 registros · WGS84</span>
+        <span>341 aeropuertos · 263 unidades administrativas</span>
         <span>Fuentes oficiales + OurAirports</span>
       </div>
     </aside>
@@ -174,6 +182,7 @@
           <div><span class="legend-dot domestic"></span>Doméstico</div>
           <div><span class="legend-dot mixed"></span>Militar-mixto</div>
           <div><span class="cargo-symbol">C</span>Función carguera relevante</div>
+          <div><span class="administrative-symbol"></span>División administrativa</div>
           <p>El tamaño del símbolo representa la longitud de la pista principal.</p>
         </div>
       </div>
@@ -195,16 +204,17 @@
     </button>
     <p class="eyebrow">Metodología y alcance</p>
     <h2 id="aboutTitle">Acerca de los datos</h2>
-    <p>La capa reúne aeropuertos sudamericanos con servicio comercial regular, más instalaciones mixtas o cargueras relevantes identificadas. Las coordenadas están expresadas en WGS84.</p>
+    <p>La capa reúne aeropuertos sudamericanos con servicio comercial regular, más instalaciones mixtas o cargueras relevantes identificadas. Se incorpora además el primer nivel político-administrativo equivalente de cada país. Las coordenadas están expresadas en WGS84.</p>
     <div class="about-grid">
       <div><strong>341</strong><span>aeropuertos</span></div>
       <div><strong>13</strong><span>países y territorios</span></div>
-      <div><strong>83,6 %</strong><span>con AIP oficial localizada</span></div>
+      <div><strong>263</strong><span>unidades administrativas</span></div>
     </div>
     <h3>Lectura responsable</h3>
     <ul>
       <li>La referencia oficial se combina con OurAirports para geometría e infraestructura.</li>
       <li>La tabla operativa sólo muestra cifras verificadas y deja vacíos los valores no disponibles.</li>
+      <li>Las divisiones corresponden a ADM1; en Guayana Francesa se muestran sus 22 comunas porque el nivel regional coincide con todo el territorio.</li>
       <li>Para uso operacional deben consultarse la AIP y los NOTAM vigentes de cada país.</li>
     </ul>
     <p class="dialog-note">Compilación: 4 de agosto de 2026. Elaboración: GeoData.</p>
@@ -213,6 +223,6 @@
 
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="vendor/leaflet-markercluster/leaflet.markercluster.js"></script>
-  <script src="js/aeropuertos-sudamerica.js?v=20260804-3" defer></script>
+  <script src="js/aeropuertos-sudamerica.js?v=20260804-4" defer></script>
 </body>
 </html>
