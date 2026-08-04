@@ -3,7 +3,8 @@
 
   const DATA_URLS = {
     airports: "data/sudamerica/aeropuertos_sudamerica.geojson",
-    operations: "data/sudamerica/datos_operativos_aeropuertos.csv"
+    operations: "data/sudamerica/datos_operativos_aeropuertos.csv",
+    administrative: "data/sudamerica/divisiones_administrativas_sudamerica.geojson"
   };
 
   const TYPE_META = {
@@ -26,6 +27,8 @@
     country: document.getElementById("countrySelect"),
     cargoOnly: document.getElementById("cargoOnly"),
     operationalOnly: document.getElementById("operationalOnly"),
+    administrativeToggle: document.getElementById("administrativeToggle"),
+    administrativeStatus: document.getElementById("administrativeStatus"),
     typeChips: [...document.querySelectorAll("[data-type]")],
     typeCounts: [...document.querySelectorAll("[data-count-type]")],
     selectAllTypes: document.getElementById("selectAllTypes"),
@@ -54,6 +57,8 @@
   const state = {
     map: null,
     cluster: null,
+    administrativeLayer: null,
+    administrativeLoaded: false,
     airports: [],
     filtered: [],
     markers: new Map(),
@@ -101,6 +106,14 @@
       { position: "bottomleft", collapsed: true }
     ).addTo(state.map);
 
+    state.map.createPane("administrativePane");
+    state.map.getPane("administrativePane").style.zIndex = 320;
+    state.administrativeLayer = L.geoJSON(null, {
+      pane: "administrativePane",
+      style: administrativeStyle,
+      onEachFeature: bindAdministrativeFeature
+    }).addTo(state.map);
+
     state.cluster = L.markerClusterGroup({
       chunkedLoading: true,
       chunkInterval: 100,
@@ -114,6 +127,60 @@
 
     state.map.addLayer(state.cluster);
     state.map.on("click", () => closeDetail());
+  }
+
+  async function loadAdministrativeLayer() {
+    try {
+      const response = await fetchWithRetry(DATA_URLS.administrative, 2);
+      const geojson = await response.json();
+      if (geojson.type !== "FeatureCollection" || !Array.isArray(geojson.features)) {
+        throw new Error("La capa administrativa no es un FeatureCollection válido.");
+      }
+
+      state.administrativeLayer.clearLayers();
+      state.administrativeLayer.addData(geojson);
+      state.administrativeLoaded = true;
+      dom.administrativeStatus.textContent = `${NUMBER_FORMAT.format(geojson.features.length)} unidades cargadas`;
+    } catch (error) {
+      console.warn("No fue posible cargar la capa administrativa.", error);
+      state.administrativeLoaded = false;
+      dom.administrativeStatus.textContent = "Capa temporalmente no disponible";
+      dom.administrativeToggle.checked = false;
+    }
+  }
+
+  function administrativeStyle() {
+    return {
+      color: "#ffffff",
+      weight: 0.8,
+      opacity: 0.95,
+      fillColor: "#d9d9d9",
+      fillOpacity: 0.45
+    };
+  }
+
+  function bindAdministrativeFeature(feature, layer) {
+    const properties = feature.properties || {};
+    const sourceLabel = escapeHTML(properties.fuente);
+    const source = properties.fuente_url
+      ? `<a href="${escapeAttribute(properties.fuente_url)}" target="_blank" rel="noopener noreferrer">${sourceLabel}</a>`
+      : sourceLabel;
+    layer.bindTooltip(
+      `<strong>${escapeHTML(properties.nombre)}</strong><span>${escapeHTML(properties.tipo_unidad)} · ${escapeHTML(properties.pais)}</span>`,
+      { sticky: true, className: "administrative-tooltip" }
+    );
+    layer.bindPopup(
+      `<div class="administrative-popup">
+        <span>${escapeHTML(properties.tipo_unidad)} · ${escapeHTML(properties.pais)}</span>
+        <strong>${escapeHTML(properties.nombre)}</strong>
+        <small>Fuente: ${source}${properties.anio_fuente ? ` · ${escapeHTML(properties.anio_fuente)}` : ""}</small>
+      </div>`,
+      { maxWidth: 285 }
+    );
+    layer.on({
+      mouseover: () => layer.setStyle({ color: "#0b1f33", weight: 1.4, fillColor: "#c9dde3", fillOpacity: 0.62 }),
+      mouseout: () => state.administrativeLayer.resetStyle(layer)
+    });
   }
 
   async function loadData() {
@@ -814,6 +881,16 @@
       });
     });
 
+    dom.administrativeToggle.addEventListener("change", () => {
+      if (dom.administrativeToggle.checked) {
+        if (state.administrativeLoaded && !state.map.hasLayer(state.administrativeLayer)) {
+          state.map.addLayer(state.administrativeLayer);
+        }
+      } else if (state.map.hasLayer(state.administrativeLayer)) {
+        state.map.removeLayer(state.administrativeLayer);
+      }
+    });
+
     dom.typeChips.forEach((chip) => {
       chip.addEventListener("click", () => {
         const type = chip.dataset.type;
@@ -882,6 +959,7 @@
       initMap();
       bindEvents();
       loadData();
+      loadAdministrativeLayer();
     } catch (error) {
       console.error(error);
       setLoading(false);
